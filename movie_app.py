@@ -1,10 +1,11 @@
 import storage_json
+import storage_csv
 import statistics
 import random
 
 
 class MovieApp:
-    storage = storage_json.StorageJson('movies.json')
+
 
     def __init__(self, storage):
         self._storage = storage
@@ -17,7 +18,7 @@ class MovieApp:
                 str: A formatted string containing all movies with their details.
             """
         try:
-            movies = self._storage.list_movies()
+            movies = self._storage.get_movies()
             num_of_movies = len(movies)
             movie_list = f"{num_of_movies} movies in total\n"
             for index, (key, value) in enumerate(movies.items(), start=1):
@@ -33,7 +34,7 @@ class MovieApp:
             Returns:
                 str: A success message if the movie is added or an error message for invalid input.
             """
-        movies = self._command_list_movies()
+        movies = self._storage.get_movies()
         title = input("Enter new movie name: ")
         try:
             year = int(input("Enter Release Year: "))
