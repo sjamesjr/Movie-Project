@@ -1,11 +1,11 @@
 import storage_json
 import storage_csv
+import requests
 import statistics
 import random
 
 
 class MovieApp:
-
 
     def __init__(self, storage):
         self._storage = storage
@@ -29,24 +29,46 @@ class MovieApp:
 
     def _command_add_movie(self):
         """
-            Adds a new movie to the storage. Prompts the user for movie title, release year, and rating.
+        Adds a new movie to the storage by searching for its details in the OMDb API.
 
-            Returns:
-                str: A success message if the movie is added or an error message for invalid input.
-            """
-        movies = self._storage.get_movies()
-        title = input("Enter new movie name: ")
+        Returns:
+            str: A success message if the movie is added or an error message for invalid input.
+        """
         try:
-            year = int(input("Enter Release Year: "))
-            rating = float(input("Enter new movie rating: "))
-            movies[title] = {"Year": year, "Rating": rating}
-            # Add the movie and save the data to the storage
-            self._storage.add_movie(title, year, rating)
-            return f'{title} released {year} rated {rating} has been successfully added'
-        except ValueError:
-            return "Invalid input. Please enter a valid number for the rating."
+            title = input("Enter movie name: ").strip()
+            if not title:
+                return "Movie title cannot be empty."
+
+            # Fetch movie details from OMDb API
+            api_key = "336e4113"
+            url = f"http://www.omdbapi.com/?t={title}&apikey={api_key}"
+            response = requests.get(url)
+            movie_data = response.json()
+
+            if movie_data.get("Response") == "False":
+                return f"Movie '{title}' not found in OMDb database."
+
+            # Extract required fields
+            title = movie_data.get("Title")
+            year = movie_data.get("Year")
+            rating = movie_data.get("imdbRating")
+            poster_url = movie_data.get("Poster")
+
+            if rating == "N/A":  # Handle missing ratings
+                rating = None
+            else:
+                try:
+                    rating = float(rating)
+                except ValueError:
+                    rating = None
+
+            # Save movie details to storage
+            self._storage.add_movie(title, year, rating, poster_url)
+
+            return f"'{title}' ({year}) with IMDb rating {rating} has been added. Poster: {poster_url}"
+
         except Exception as e:
-            return f"An error occurred while listing movies: {str(e)}"
+            return f"An error occurred while adding the movie: {str(e)}"
 
     def _command_delete_movie(self):
         """
@@ -201,15 +223,59 @@ class MovieApp:
             elif choice == "8":
                 print(self._command_sort_movie())
             elif choice == "9":
+                self._generate_website()
+                print("Website was generated successfully.")
+            elif choice == "10":
                 print("Exiting the program. Goodbye!")
                 exit()
             else:
                 print("Invalid choice. Please select an option from 1 to 9.")
         except Exception as e:
-            return f"An error occurred while listing movies: {str(e)}"
+            print(f"An error occurred while listing movies: {str(e)}")
 
     def _generate_website(self):
-        ...
+        """
+            Generates an index.html file based on the provided movie list.
+
+            :param movies: List of dictionaries, each containing 'title', 'year', 'rating', and 'poster_url'.
+            """
+
+        movie_template = """
+                       <li class="movie">
+                           <img src="{poster_url}" alt="{title} poster"/>
+                           <h2>{title} ({year})</h2>
+                           <p>Rating: {rating}</p>
+                       </li>
+                   """
+
+        template_list = [movie_template.format(title=title, year=movie_details["Year"],
+                                               rating=movie_details["Rating"], poster_url=movie_details["Poster"])
+                         for title, movie_details in self._storage.get_movies().items()]
+
+        movie_list_html = "\n".join(template_list)
+        html_template = """<!DOCTYPE html>
+               <html>
+               <head>
+                   <title>My Movie App</title>
+                   <link rel="stylesheet" href="style.css"/>
+               </head>
+               <body>
+               <div class="list-movies-title">
+                   <h1>MovieApp</h1>
+               </div>
+               <div>
+                   <ol class="movie-grid">
+                       {movie_list}
+                   </ol>
+               </div>
+               </body>
+               </html>
+                   """.format(movie_list=movie_list_html)
+
+        # Write to index.html
+        with open("index.html", "w", encoding="utf-8") as file:
+            file.write(html_template)
+
 
     def run(self):
         """
@@ -219,11 +285,11 @@ class MovieApp:
             print(
                 "\n********** My Movies Database **********\nMenu:\n"
                 "1. List movies\n2. Add movie\n3. Delete movie\n4. Update movie\n"
-                "5. Stats\n6. Random movie\n7. Search movie\n8. Movies sorted by rating\n9. Exit"
+                "5. Stats\n6. Random movie\n7. Search movie\n8. Movies sorted by rating\n9. Generate Website\n10. Exit"
             )
             try:
 
-                menu_prompt = input("Enter choice (1-9): ")
+                menu_prompt = input("Enter choice (1-10): ")
                 self._handle_command(menu_prompt)
             except Exception as e:
                 print(f"An unexpected error occurred: {str(e)}")
