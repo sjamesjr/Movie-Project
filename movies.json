@@ -1,18 +1,22 @@
 {
+    "Titanic": {
+        "Year": "1997",
+        "Rating": 7.9,
+        "Poster": "https://m.media-amazon.com/images/M/MV5BYzYyN2FiZmUtYWYzMy00MzViLWJkZTMtOGY1ZjgzNWMwN2YxXkEyXkFqcGc@._V1_SX300.jpg"
+    },
+    "The Goonies": {
+        "Year": "1985",
+        "Rating": 7.7,
+        "Poster": "https://m.media-amazon.com/images/M/MV5BMjE1OWU4ODEtZmEzMC00NTcwLWFlMWUtYjhlNzExOTIxYzVlXkEyXkFqcGc@._V1_SX300.jpg"
+    },
+    "Ace Ventura: Pet Detective": {
+        "Year": "1994",
+        "Rating": 6.9,
+        "Poster": "https://m.media-amazon.com/images/M/MV5BOWU1M2Q5MDgtOTkxZS00NjdmLWFlNWEtOGEyOTNlNGYyYTZlXkEyXkFqcGc@._V1_SX300.jpg"
+    },
     "Up": {
-        "Year": 2008,
-        "Rating": 6.0
-    },
-    "William": {
-        "Year": 2018,
-        "Rating": 10.0
-    },
-    "Lucas": {
-        "Year": 2013,
-        "Rating": 10.0
-    },
-    "Nina": {
-        "Year": 1979,
-        "Rating": 8.9
+        "Year": "2009",
+        "Rating": 8.3,
+        "Poster": "https://m.media-amazon.com/images/M/MV5BNmI1ZTc5MWMtMDYyOS00ZDc2LTkzOTAtNjQ4NWIxNjYyNDgzXkEyXkFqcGc@._V1_SX300.jpg"
     }
 }
