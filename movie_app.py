@@ -1,5 +1,3 @@
-import storage_json
-import storage_csv
 import requests
 import statistics
 import random
