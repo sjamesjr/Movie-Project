@@ -1,8 +1,8 @@
-from istorage import IStorage
+from storage import istorage
 import json
 
 
-class StorageJson(IStorage):
+class StorageJson(istorage.IStorage):
     def __init__(self, file_name):
         self.file_name = file_name
 
